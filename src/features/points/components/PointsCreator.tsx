@@ -7,7 +7,6 @@ import type { LeafletMouseEvent } from 'leaflet';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import type { Feature, Point as GeoJSONPoint, Polygon } from 'geojson';
 import { nanoid } from 'nanoid';
-import PointsLayer from '@/features/points/components/PointsLayer';
 import PointsForm from '@/features/points/components/PointsForm';
 import type { Point } from '@/features/points/types';
 import ClickHandler from '@/shared/components/ClickHandler';
@@ -64,8 +63,6 @@ const PointsCreator = () => {
 
   return (
     <>
-      <PointsLayer/>
-
       <ClickHandler onMapClick={handleMapClick}/>
 
       {draftPoint && (

@@ -7,6 +7,7 @@ import ControlPanel from '@/widgets/ControlPanel';
 import FieldCreator from '@/features/createField/components/FieldCreator';
 import Fields from '@/features/fields/components/Fields';
 import PointsCreator from '@/features/points/components/PointsCreator';
+import PointsLayer from '@/features/points/components/PointsLayer';
 
 const lat = 50.4501;
 const lng = 30.53;
@@ -16,8 +17,8 @@ const zoom = 13;
 const MapInner = () => {
   const { setMap } = useMapContext();
 
-  const isCreatingField = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
-  const isAddingPoints = useAppSelector((state) => state.sharedSlice.isAddingPointsFlow);
+  const isCreatingFieldFlow = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
+  const isAddingPointsFlow = useAppSelector((state) => state.sharedSlice.isAddingPointsFlow);
   const isConfirmCreation = useAppSelector((state) => state.fieldSlice.isConfirmCreation);
 
   return (
@@ -34,11 +35,13 @@ const MapInner = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {(isCreatingField || isConfirmCreation) && <FieldCreator/>}
+      {(isCreatingFieldFlow || isConfirmCreation) && <FieldCreator/>}
 
       <Fields/>
 
-      {isAddingPoints && <PointsCreator/>}
+      <PointsLayer/>
+
+      {isAddingPointsFlow && <PointsCreator/>}
 
     </MapContainer>
   );

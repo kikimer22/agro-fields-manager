@@ -10,27 +10,24 @@ import type { LeafletMouseEvent } from 'leaflet';
 
 export default function FieldCreator() {
   const dispatch = useAppDispatch();
-  const vertices = useAppSelector(
-    (state) => state.fieldSlice.feature.geometry.coordinates[0]
-  );
-  const isCreatingField = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
-  const isAddingPoints = useAppSelector((state) => state.sharedSlice.isAddingPointsFlow);
+  const vertices = useAppSelector((state) => state.fieldSlice.feature.geometry.coordinates[0]);
+  const isCreatingFieldFlow = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
   const isShowingField = useAppSelector((state) => state.fieldSlice.isShowingField);
+  const isAddingPointsMode = useAppSelector((state) => state.fieldSlice.isAddingPointsMode);
 
   const handleMapClick = useCallback(({ latlng: { lat, lng } }: LeafletMouseEvent) => {
-    if (!isCreatingField) return;
-    if (!isAddingPoints) return;
+    if (!isCreatingFieldFlow || !isAddingPointsMode) return;
     dispatch(addPoint([lng, lat]));
-  }, [dispatch, isAddingPoints, isCreatingField]);
+  }, [dispatch, isCreatingFieldFlow, isAddingPointsMode]);
 
   return (
     <>
-      {isCreatingField && <ClickHandler onMapClick={handleMapClick}/>}
+      {isCreatingFieldFlow && <ClickHandler onMapClick={handleMapClick}/>}
 
       <PointsLayer/>
 
       {vertices.length > 1 && !isShowingField && (
-        <Polyline positions={transformPositionsToLatLngExpression(vertices)} color="red"/>
+        <Polyline positions={transformPositionsToLatLngExpression(vertices)} color="red" interactive={false}/>
       )}
 
       {isShowingField && <FieldLayer/>}

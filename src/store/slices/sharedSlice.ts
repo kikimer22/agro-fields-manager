@@ -6,16 +6,16 @@ import type { FieldFeature } from '@/shared/types.ts';
 // type Action = '' // TODO
 
 interface FieldSliceState {
-  isSelectingFieldFlow: boolean;
   isCreatingFieldFlow: boolean;
+  isSelectingFieldFlow: boolean;
   isAddingPointsFlow: boolean;
   selectedField: FieldFeature | null;
 }
 
 const initialState: FieldSliceState = {
   isCreatingFieldFlow: false,
-  isAddingPointsFlow: false,
   isSelectingFieldFlow: true,
+  isAddingPointsFlow: false,
   selectedField: null,
 };
 
@@ -23,25 +23,25 @@ export const sharedSlice = createSlice({
   name: 'sharedSlice',
   initialState,
   reducers: {
-    setSelectingFieldFlow: (state, action: PayloadAction<boolean>) => {
-      state.isCreatingFieldFlow = false;
-      state.isAddingPointsFlow = false;
-      state.isSelectingFieldFlow = action.payload;
-    },
     setCreatingFieldFlow: (state, action: PayloadAction<boolean>) => {
       state.isCreatingFieldFlow = action.payload;
-      state.isAddingPointsFlow = false;
       state.isSelectingFieldFlow = false;
+      state.isAddingPointsFlow = false;
+    },
+    setSelectingFieldFlow: (state, action: PayloadAction<boolean>) => {
+      state.isCreatingFieldFlow = false;
+      state.isSelectingFieldFlow = action.payload;
+      state.isAddingPointsFlow = false;
     },
     setAddingPointsFlow: (state, action: PayloadAction<boolean>) => {
       state.isCreatingFieldFlow = false;
-      state.isAddingPointsFlow = action.payload;
       state.isSelectingFieldFlow = false;
+      state.isAddingPointsFlow = action.payload;
     },
     setSelectedField: (state, action: PayloadAction<FieldFeature | null>) => {
       state.selectedField = action.payload;
     },
-    reset: () => initialState,
+    reset: () => ({ ...initialState }),
   },
 });
 

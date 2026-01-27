@@ -25,8 +25,8 @@ const PointsLayer = () => {
           color={idx === 0 ? 'red' : 'green'}
           eventHandlers={{
             click: (e) => {
-              if (!isCreatingField && isAddingPointsMode) return;
               stopAndPrevent(e);
+              if (!isCreatingField || isAddingPointsMode) return;
               dispatch(removePoint([lng, lat]));
             },
           }}

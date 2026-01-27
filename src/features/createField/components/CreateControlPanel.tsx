@@ -13,13 +13,13 @@ const CreateControlPanel = () => {
 
   const handleToggleCreating = useCallback(() => {
     dispatch(setCreatingFieldFlow(!isCreatingFieldFlow));
-    dispatch(setConfirmCreation(false));
-  }, [isCreatingFieldFlow, dispatch]);
+    if (isConfirmCreation) dispatch(setConfirmCreation(false));
+  }, [isCreatingFieldFlow, dispatch, isConfirmCreation]);
 
   const handleToggleConfirm = useCallback(() => {
     dispatch(setConfirmCreation(!isConfirmCreation));
-    dispatch(setCreatingFieldFlow(false));
-  }, [isConfirmCreation, dispatch]);
+    if (isCreatingFieldFlow) dispatch(setCreatingFieldFlow(false));
+  }, [isConfirmCreation, dispatch, isCreatingFieldFlow]);
 
   const handleToggleAddingPointsMode = useCallback(() => {
     dispatch(setAddingPointsMode(!isAddingPointsMode));
@@ -27,13 +27,15 @@ const CreateControlPanel = () => {
 
   return (
     <div className="flex flex-col justify-center items-center gap-4 p-2 border w-full">
-      <Button onClick={handleToggleCreating} className="w-full" variant={isCreatingFieldFlow ? 'destructive' : 'default'}>
+      <Button onClick={handleToggleCreating} className="w-full"
+              variant={isCreatingFieldFlow ? 'destructive' : 'default'}>
         {isCreatingFieldFlow ? 'Disable creating polygon' : 'Enable creating polygon'}
       </Button>
 
       {isCreatingFieldFlow && (
         <div className="flex flex-col justify-center items-center gap-4">
-          <Button onClick={handleToggleAddingPointsMode} className="w-full" variant={isAddingPointsMode ? 'default' : 'destructive'}>
+          <Button onClick={handleToggleAddingPointsMode} className="w-full"
+                  variant={isAddingPointsMode ? 'default' : 'destructive'}>
             current mode: {isAddingPointsMode ? 'ADD' : 'REMOVE'}
           </Button>
           <Button onClick={handleToggleConfirm} className="w-full" disabled={!isShowingField}>Confirm creation</Button>
