@@ -1,10 +1,14 @@
-import Map from '@/widgets/Map';
+import { MapProvider } from '@/shared/context/MapProvider';
+import Layout from '@/layouts/Layout.tsx';
+import MapPage from '@/pages/MapPage';
 
 function App() {
   return (
-    <div className="flex items-center justify-center w-full h-dvh">
-      <Map/>
-    </div>
+    <MapProvider>
+      <Layout>
+        <MapPage/>
+      </Layout>
+    </MapProvider>
   );
 }
 

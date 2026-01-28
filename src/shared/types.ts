@@ -21,5 +21,6 @@ export type FieldFeature = Feature<Polygon, FieldProperties>;
 
 export type FieldsCollection = FeatureCollection<Polygon, FieldProperties>;
 
+// export type Flow = 'CreateField' | 'SelectField' | 'PutPoints'; // TODO replace Flag To Flow logic
 
-
+export type Sort = 'asc' | 'desc';

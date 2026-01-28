@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
-import { MapContext } from '@/context/MapContext';
+import { MapContext } from '@/shared/context/MapContext.ts';
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
   const [map, setMap] = useState<LeafletMap | null>(null);

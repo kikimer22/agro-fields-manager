@@ -1,28 +1,50 @@
-import { memo, useCallback, useState } from 'react';
+import { type ChangeEvent, memo, type MouseEvent, useEffect, useEffectEvent, useRef, useState } from 'react';
 import type { FieldProperties } from '@/shared/types';
 import { Field, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
+import { stopAndPrevent } from '@/lib/utils.ts';
 
 interface Props {
   onSave: (fieldFormData: Pick<FieldProperties, 'name' | 'crop'>) => void;
   onCancel: () => void;
 }
 
-const initFormData = { name: '', crop: '' };
+const initFormData: Pick<FieldProperties, 'name' | 'crop'> = { name: '', crop: '' };
 
 const CreateFieldForm = ({ onSave, onCancel }: Props) => {
-  const [fieldFormData, setFieldFormData] = useState<Pick<FieldProperties, 'name' | 'crop'>>(initFormData);
+  const [fieldFormData, setFieldFormData] = useState(initFormData);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSave = useCallback(() => {
+  const focusInput = useEffectEvent(() => {
+    inputRef.current?.select();
+  });
+
+  useEffect(() => {
+    focusInput();
+  }, []);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFieldFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCancel = (e: MouseEvent) => {
+    stopAndPrevent(e);
+    onCancel();
+  };
+
+  const handleSave = (e: MouseEvent) => {
+    stopAndPrevent(e);
     onSave(fieldFormData);
-  }, [onSave, fieldFormData]);
+  };
 
   return (
     <div className="flex flex-col justify-center items-center gap-2">
       <Field>
         <FieldLabel htmlFor="input-field-name">Name</FieldLabel>
         <Input
+          ref={inputRef}
           id="input-field-name"
           name="name"
           type="text"
@@ -30,7 +52,7 @@ const CreateFieldForm = ({ onSave, onCancel }: Props) => {
           required
           minLength={1}
           value={fieldFormData.name}
-          onChange={e => setFieldFormData({ ...fieldFormData, [e.target.name]: e.target.value })}
+          onChange={handleChange}
         />
       </Field>
       <Field>
@@ -41,12 +63,18 @@ const CreateFieldForm = ({ onSave, onCancel }: Props) => {
           type="text"
           placeholder="Enter field crop"
           value={fieldFormData.crop}
-          onChange={e => setFieldFormData({ ...fieldFormData, [e.target.name]: e.target.value })}
+          onChange={handleChange}
         />
       </Field>
       <div className="flex justify-end gap-2">
-        <Button onClick={onCancel} variant={'ghost'}>Cancel</Button>
-        <Button onClick={handleSave} disabled={!fieldFormData.name}>Save</Button>
+        <Button
+          onClick={handleSave}
+          disabled={!fieldFormData.name}
+          aria-disabled={!fieldFormData.name}
+        >
+          Save
+        </Button>
+        <Button onClick={handleCancel} variant="ghost">Cancel</Button>
       </div>
     </div>
   );

@@ -1,23 +1,23 @@
 import { memo, useCallback, useMemo, type MouseEvent } from 'react';
+import { type Icon, icon } from 'leaflet';
 import { Marker, Popup, Tooltip } from 'react-leaflet';
-import L, { type Icon } from 'leaflet';
 import type { Point } from '@/features/points/types';
 import { useAppDispatch } from '@/store/hooks/useRdxStore';
 import { removePoint } from '@/features/points/slice/pointsSlice';
-import { Button } from '@/shared/components/ui/button.tsx';
 import { stopAndPrevent } from '@/lib/utils';
+import { Button } from '@/shared/components/ui/button.tsx';
 
 const iconCache = new Map<string, Icon>();
 
 function getIcon(filename: string) {
   if (iconCache.has(filename)) return iconCache.get(filename)!;
-  const icon = L.icon({
+  const i = icon({
     iconUrl: `/icons/${filename}`,
     iconSize: [28, 28],
     iconAnchor: [14, 28],
   });
-  iconCache.set(filename, icon);
-  return icon;
+  iconCache.set(filename, i);
+  return i;
 }
 
 const Text = memo(({ point }: { point: Point }) => {
@@ -28,7 +28,7 @@ const Text = memo(({ point }: { point: Point }) => {
       <p>Lng: {point.lng.toFixed(4)}</p>
       <p>MGRS: {point.mgrs}</p>
       {point.description && <p className="mt-2">{point.description}</p>}
-      <p className="mt-2 text-xs text-gray-500">{new Date(point.time).toLocaleString()}</p>
+      <p className="mt-2 text-xs text-gray-500">{new Date(point.date).toLocaleString()}</p>
     </div>
   );
 });
@@ -45,7 +45,7 @@ const PointMarker = ({ point }: { point: Point }) => {
 
   return (
     <Marker position={[point.lat, point.lng]} icon={icon}>
-      <Tooltip>
+      <Tooltip interactive={false}>
         <Text point={point}/>
       </Tooltip>
       <Popup>

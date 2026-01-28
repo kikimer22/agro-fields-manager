@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
 import { setCreatingFieldFlow } from '@/store/slices/sharedSlice';
-import { setAddingPointsMode, setConfirmCreation } from '@/features/createField/slice/fieldSlice';
+import { setAddingPointsMode, setConfirmCreation, reset } from '@/features/createField/slice/fieldSlice';
 
 const CreateControlPanel = () => {
   const dispatch = useAppDispatch();
@@ -11,19 +10,23 @@ const CreateControlPanel = () => {
   const isShowingField = useAppSelector((state) => state.fieldSlice.isShowingField);
   const isAddingPointsMode = useAppSelector((state) => state.fieldSlice.isAddingPointsMode);
 
-  const handleToggleCreating = useCallback(() => {
+  const handleToggleCreating = () => {
     dispatch(setCreatingFieldFlow(!isCreatingFieldFlow));
-    if (isConfirmCreation) dispatch(setConfirmCreation(false));
-  }, [isCreatingFieldFlow, dispatch, isConfirmCreation]);
+    // if (isConfirmCreation) dispatch(setConfirmCreation(false));
+  };
 
-  const handleToggleConfirm = useCallback(() => {
-    dispatch(setConfirmCreation(!isConfirmCreation));
-    if (isCreatingFieldFlow) dispatch(setCreatingFieldFlow(false));
-  }, [isConfirmCreation, dispatch, isCreatingFieldFlow]);
-
-  const handleToggleAddingPointsMode = useCallback(() => {
+  const handleToggleAddingPointsMode = () => {
     dispatch(setAddingPointsMode(!isAddingPointsMode));
-  }, [isAddingPointsMode, dispatch]);
+  };
+
+  const handleToggleConfirm = () => {
+    dispatch(setConfirmCreation(!isConfirmCreation));
+    // if (isCreatingFieldFlow) dispatch(setCreatingFieldFlow(false));
+  };
+
+  const handleReset = () => {
+    dispatch(reset());
+  };
 
   return (
     <div className="flex flex-col justify-center items-center gap-4 p-2 border w-full">
@@ -33,12 +36,13 @@ const CreateControlPanel = () => {
       </Button>
 
       {isCreatingFieldFlow && (
-        <div className="flex flex-col justify-center items-center gap-4">
+        <div className="flex flex-col justify-center items-center gap-4 w-full">
           <Button onClick={handleToggleAddingPointsMode} className="w-full"
                   variant={isAddingPointsMode ? 'default' : 'destructive'}>
-            current mode: {isAddingPointsMode ? 'ADD' : 'REMOVE'}
+            Current mode: {isAddingPointsMode ? 'ADD' : 'REMOVE'}
           </Button>
-          <Button onClick={handleToggleConfirm} className="w-full" disabled={!isShowingField}>Confirm creation</Button>
+          <Button onClick={handleToggleConfirm} className="w-full" disabled={!isShowingField || isConfirmCreation}>Confirm creation</Button>
+          <Button onClick={handleReset} className="w-full" variant="destructive">Reset</Button>
         </div>
       )}
     </div>

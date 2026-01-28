@@ -1,17 +1,16 @@
-import { memo, useCallback, useState } from 'react';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
-import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
-import { addPoint } from '@/features/points/slice/pointsSlice';
-import { convertToMGRS } from '@/lib/utils';
+import { useCallback, useState } from 'react';
 import type { LeafletMouseEvent } from 'leaflet';
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
 import type { Feature, Point as GeoJSONPoint, Polygon } from 'geojson';
 import { nanoid } from 'nanoid';
-import PointsForm from '@/features/points/components/PointsForm';
-import type { Point } from '@/features/points/types';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { convertToMGRS } from '@/lib/utils';
+import { ICON_MAP, MARKER_SIZE, POINT_SELECTOR_ICONS } from '@/shared/constants';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
+import { addPoint } from '@/features/points/slice/pointsSlice';
+import type { Point, DraftPoint } from '@/features/points/types';
 import ClickHandler from '@/shared/components/ClickHandler';
-import type { DraftPoint } from '@/features/points/types';
-import { ICON_MAP, POINT_SELECTOR_ICONS } from '@/shared/constants';
+import PointsForm from '@/features/points/components/PointsForm';
 
 const PointsCreator = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +21,7 @@ const PointsCreator = () => {
 
   const handleMapClick = useCallback(({ latlng: { lat, lng } }: LeafletMouseEvent) => {
       if (!isAddingPointsFlow || !selectedField) return;
+      if (draftPoint && draftPoint.lat === lat && draftPoint.lng === lng) return;
 
       const pt: Feature<GeoJSONPoint> = {
         type: 'Feature',
@@ -37,7 +37,7 @@ const PointsCreator = () => {
 
       setDraftPoint({ lat, lng });
     },
-    [isAddingPointsFlow, selectedField]
+    [isAddingPointsFlow, selectedField, draftPoint]
   );
 
   const handleCancel = useCallback(() => {
@@ -49,12 +49,10 @@ const PointsCreator = () => {
       const id = nanoid();
       const { lat, lng } = draftPoint;
       const mgrs = convertToMGRS(lat, lng);
-      const time = new Date().toISOString();
+      const date = new Date().toISOString();
       const icon = ICON_MAP[type] || POINT_SELECTOR_ICONS[0];
 
-      dispatch(
-        addPoint({ id, mgrs, lng, lat, type, description, time, icon })
-      );
+      dispatch(addPoint({ id, mgrs, lng, lat, type, description, date, icon }));
 
       setDraftPoint(null);
     },
@@ -63,19 +61,19 @@ const PointsCreator = () => {
 
   return (
     <>
-      <ClickHandler onMapClick={handleMapClick}/>
+      {isAddingPointsFlow && (<ClickHandler onMapClick={handleMapClick}/>)}
 
       {draftPoint && (
         <>
           <CircleMarker
             center={[draftPoint.lat, draftPoint.lng]}
-            radius={8}
+            radius={MARKER_SIZE}
             fill={true}
             opacity={1}
             fillOpacity={1}
             color={'red'}
           >
-            <Tooltip>
+            <Tooltip interactive={false}>
               <p>Lat: {draftPoint.lat.toFixed(4)}</p>
               <p>Lng: {draftPoint.lng.toFixed(4)}</p>
             </Tooltip>
@@ -92,4 +90,4 @@ const PointsCreator = () => {
   );
 };
 
-export default memo(PointsCreator);
+export default PointsCreator;

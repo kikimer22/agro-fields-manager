@@ -5,7 +5,7 @@ export type Point = {
   lat: number;
   type: string;
   description: string;
-  time: string;
+  date: string;
   icon: string;
 }
 

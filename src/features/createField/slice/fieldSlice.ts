@@ -2,6 +2,7 @@ import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
 import type { FieldFeature, FieldProperties } from '@/shared/types';
 import { ensureClosedPolygon } from '@/lib/utils';
 import { saveFieldAction } from '@/store/actions/saveFieldAction.ts';
+import { EPS } from '@/shared/constants';
 
 interface FieldSliceState {
   feature: FieldFeature;
@@ -40,15 +41,16 @@ export const fieldSlice = createSlice({
     removePoint: (state, action: PayloadAction<[number, number]>) => {
       const [lng, lat] = action.payload;
       state.feature.geometry.coordinates[0] = state.feature.geometry.coordinates[0].filter(
-        ([x, y]) => x !== lng || y !== lat
+        ([x, y]) => Math.abs(x - lng) > EPS || Math.abs(y - lat) > EPS
       );
       state.isShowingField = state.feature.geometry.coordinates[0].length >= 3;
     },
     generateField: {
       reducer: (state, action: PayloadAction<FieldProperties>) => {
-        const coords = ensureClosedPolygon(state.feature.geometry.coordinates[0]);
+        const coords = ensureClosedPolygon(state.feature?.geometry?.coordinates[0] || []);
         return {
           ...state,
+          isConfirmCreation: false,
           feature: {
             ...state.feature,
             properties: { ...state.feature.properties, ...action.payload },

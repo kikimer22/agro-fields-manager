@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { latLngBounds } from 'leaflet';
 import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
 import { transformPositionsToLatLngExpression } from '@/lib/utils';
-import { useMapContext } from '@/context/MapContext';
+import { useMapContext } from '@/shared/context/MapContext';
 import type { FieldFeature } from '@/shared/types';
 import { selectFieldAction } from '@/store/actions/selectFieldAction.ts';
 import { setSelectingFieldFlow } from '@/store/slices/sharedSlice.ts';
@@ -15,18 +15,19 @@ export const useFieldActions = () => {
 
   const handleToggleSelectingFlow = useCallback(() => {
     dispatch(setSelectingFieldFlow(!isSelectingFieldFlow));
-  }, [isSelectingFieldFlow, dispatch]);
+  }, [dispatch, isSelectingFieldFlow]);
 
   const selectAndCenter = useCallback((f: FieldFeature) => {
-    const isSameId = !!(selectedFieldId && selectedFieldId === f.properties.id);
-    dispatch(selectFieldAction(isSameId ? null : f.properties.id));
-    if (!isSameId) return;
+    const isSelected = !!(selectedFieldId && selectedFieldId === f.properties.id);
+    dispatch(selectFieldAction(isSelected ? null : f.properties.id));
+    if (isSelected) return;
     if (!map) return;
     const bounds = latLngBounds(transformPositionsToLatLngExpression(f.geometry.coordinates[0]));
     const center = bounds.getCenter();
-    map.fitBounds(bounds);
-    // map.setView(center, map.getZoom());
-    map.setView(center);
+    map.setView(center, map.getZoom());
+
+    const currentViewBounds = map.getBounds();
+    if (!currentViewBounds.contains(bounds)) map.fitBounds(bounds);
   }, [dispatch, map, selectedFieldId]);
 
   return { selectAndCenter, handleToggleSelectingFlow };

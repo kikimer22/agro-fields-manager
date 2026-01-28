@@ -1,20 +1,10 @@
-import { memo, useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks/useRdxStore';
-import { shallowEqual } from 'react-redux';
-import PointMarker from './PointMarker';
+import PointMarker from '@/features/points/components/PointMarker';
 
 const PointsLayer = () => {
-  const points = useAppSelector((s) => s.pointsSlice.points, shallowEqual);
+  const points = useAppSelector((s) => s.pointsSlice.selectedPoints);
 
-  const list = useMemo(() => points.slice(), [points]);
-
-  return (
-    <>
-      {list.map((p) => (
-        <PointMarker key={p.id} point={p}/>
-      ))}
-    </>
-  );
+  return points.map((p) => <PointMarker key={p.id} point={p}/>);
 };
 
-export default memo(PointsLayer);
+export default PointsLayer;
