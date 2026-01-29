@@ -9,8 +9,9 @@ import { setSelectingFieldFlow } from '@/store/slices/sharedSlice.ts';
 
 export const useFieldActions = () => {
   const dispatch = useAppDispatch();
-  const selectedFieldId = useAppSelector((state) => state.fieldsSlice.selectedFieldId);
-  const isSelectingFieldFlow = useAppSelector((state) => state.sharedSlice.isSelectingFieldFlow);
+  const selectedFieldId = useAppSelector((s) => s.fieldsSlice.selectedFieldId);
+  const isSelectingFieldFlow = useAppSelector((s) => s.sharedSlice.isSelectingFieldFlow);
+
   const { map } = useMapContext();
 
   const handleToggleSelectingFlow = useCallback(() => {

@@ -10,9 +10,9 @@ import { INIT_MAP_CENTER, INIT_MAP_ZOOM } from '@/shared/constants.ts';
 const Map = () => {
   const { setMap } = useMapContext();
 
-  const isCreatingFieldFlow = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
-  const isAddingPointsFlow = useAppSelector((state) => state.sharedSlice.isAddingPointsFlow);
-  const isConfirmCreation = useAppSelector((state) => state.fieldSlice.isConfirmCreation);
+  const isCreatingFieldFlow = useAppSelector((s) => s.sharedSlice.isCreatingFieldFlow);
+  const isAddingPointsFlow = useAppSelector((s) => s.sharedSlice.isAddingPointsFlow);
+  const isConfirm = useAppSelector((s) => s.fieldSlice.isConfirm);
 
   return (
     <MapContainer
@@ -27,7 +27,7 @@ const Map = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {(isCreatingFieldFlow || isConfirmCreation) && <FieldCreator/>}
+      {(isCreatingFieldFlow || isConfirm) && <FieldCreator/>}
       <Fields/>
       <PointsLayer/>
       {isAddingPointsFlow && <PointsCreator/>}

@@ -1,14 +1,14 @@
 import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
 import type { FieldFeature, FieldProperties } from '@/shared/types';
 import { ensureClosedPolygon } from '@/lib/utils';
-import { saveFieldAction } from '@/store/actions/saveFieldAction.ts';
+import { saveFieldAction } from '@/store/actions/saveFieldAction';
 import { EPS } from '@/shared/constants';
 
 interface FieldSliceState {
   feature: FieldFeature;
   isAddingPointsMode: boolean;
-  isShowingField: boolean;
-  isConfirmCreation: boolean;
+  isSaving: boolean;
+  isConfirm: boolean;
 }
 
 const initialState: FieldSliceState = {
@@ -26,8 +26,8 @@ const initialState: FieldSliceState = {
     },
   },
   isAddingPointsMode: true,
-  isShowingField: false,
-  isConfirmCreation: false,
+  isSaving: false,
+  isConfirm: false,
 };
 
 export const fieldSlice = createSlice({
@@ -36,21 +36,21 @@ export const fieldSlice = createSlice({
   reducers: {
     addPoint: (state, action: PayloadAction<[number, number]>) => {
       state.feature.geometry.coordinates[0].push(action.payload);
-      state.isShowingField = state.feature.geometry.coordinates[0].length >= 3;
     },
     removePoint: (state, action: PayloadAction<[number, number]>) => {
       const [lng, lat] = action.payload;
       state.feature.geometry.coordinates[0] = state.feature.geometry.coordinates[0].filter(
         ([x, y]) => Math.abs(x - lng) > EPS || Math.abs(y - lat) > EPS
       );
-      state.isShowingField = state.feature.geometry.coordinates[0].length >= 3;
+      if (!state.feature.geometry.coordinates[0].length) {
+        state.isAddingPointsMode = true;
+      }
     },
     generateField: {
       reducer: (state, action: PayloadAction<FieldProperties>) => {
         const coords = ensureClosedPolygon(state.feature?.geometry?.coordinates[0] || []);
         return {
           ...state,
-          isConfirmCreation: false,
           feature: {
             ...state.feature,
             properties: { ...state.feature.properties, ...action.payload },
@@ -68,14 +68,23 @@ export const fieldSlice = createSlice({
     setAddingPointsMode: (state, action: PayloadAction<boolean>) => {
       state.isAddingPointsMode = action.payload;
     },
-    setConfirmCreation: (state, action: PayloadAction<boolean>) => {
-      state.isConfirmCreation = action.payload;
+    setConfirm: (state, action: PayloadAction<boolean>) => {
+      state.isConfirm = action.payload;
+    },
+    setSaving: (state, action: PayloadAction<boolean>) => {
+      state.isSaving = action.payload;
     },
     reset: () => ({ ...initialState }),
   },
   extraReducers: (builder) => {
     builder
-      .addCase(saveFieldAction.fulfilled, () => ({ ...initialState }));
+      .addCase(saveFieldAction.pending, (state) => {
+        state.isSaving = true;
+      })
+      .addCase(saveFieldAction.fulfilled, () => ({ ...initialState }))
+      .addCase(saveFieldAction.rejected, (state) => {
+        state.isSaving = false;
+      });
   },
 });
 
@@ -84,7 +93,8 @@ export const {
   removePoint,
   generateField,
   setAddingPointsMode,
-  setConfirmCreation,
+  setConfirm,
+  setSaving,
   reset
 } = fieldSlice.actions;
 

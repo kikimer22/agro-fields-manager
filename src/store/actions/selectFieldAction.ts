@@ -5,13 +5,12 @@ import { setSelectedField } from '@/store/slices/sharedSlice.ts';
 
 export const selectFieldAction = createAsyncThunk(
   'action/selectField',
-  async (id: string | null, { getState, dispatch }) => {
+  async (fieldId: string | null, { getState, dispatch }) => {
+    dispatch(setSelectedFieldId(fieldId));
     const state = getState() as RootState;
-    console.log('Selecting field with id:', id);
-    dispatch(setSelectedFieldId(id));
     const features = state.fieldsSlice.fieldsCollection.features;
     let selected = null;
-    if (id) selected = features.find((f) => f.properties.id === id) ?? null;
+    if (fieldId) selected = features.find((f) => f.properties.id === fieldId) ?? null;
     if (!selected?.properties?.id) throw new Error('Field not added');
     dispatch(setSelectedField(selected));
   }

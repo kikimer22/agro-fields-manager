@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, type MouseEvent } from 'react';
 import { type Icon, icon } from 'leaflet';
 import { Marker, Popup, Tooltip } from 'react-leaflet';
 import type { Point } from '@/features/points/types';
-import { useAppDispatch } from '@/store/hooks/useRdxStore';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
 import { removePoint } from '@/features/points/slice/pointsSlice';
 import { stopAndPrevent } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button.tsx';
@@ -35,13 +35,15 @@ const Text = memo(({ point }: { point: Point }) => {
 
 const PointMarker = ({ point }: { point: Point }) => {
   const dispatch = useAppDispatch();
+  const selectedField = useAppSelector((s) => s.sharedSlice.selectedField);
 
   const icon = useMemo(() => getIcon(point.icon), [point.icon]);
 
   const handleDelete = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     stopAndPrevent(e);
-    dispatch(removePoint(point.id));
-  }, [dispatch, point.id]);
+    if (!selectedField) return;
+    dispatch(removePoint({ fieldId: selectedField.properties.id, pointId: point.id }));
+  }, [dispatch, point.id, selectedField]);
 
   return (
     <Marker position={[point.lat, point.lng]} icon={icon}>

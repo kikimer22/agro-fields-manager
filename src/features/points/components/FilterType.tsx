@@ -8,7 +8,7 @@ import { NativeSelect, NativeSelectOption } from '@/shared/components/ui/native-
 
 const FilterType = () => {
   const dispatch = useAppDispatch();
-  const filter = useAppSelector((state) => state.pointsSlice.filter);
+  const filter = useAppSelector((s) => s.pointsSlice.filter);
 
   const [filterValue, setFilterValue] = useState(filter || INIT_FILTER_VALUE);
   const [isPending, startTransition] = useTransition();

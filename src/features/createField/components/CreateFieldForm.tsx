@@ -1,4 +1,4 @@
-import { type ChangeEvent, memo, type MouseEvent, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { type ChangeEvent, memo, type MouseEvent, useEffect, useRef, useState } from 'react';
 import type { FieldProperties } from '@/shared/types';
 import { Field, FieldLabel } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
@@ -7,21 +7,18 @@ import { stopAndPrevent } from '@/lib/utils.ts';
 
 interface Props {
   onSave: (fieldFormData: Pick<FieldProperties, 'name' | 'crop'>) => void;
+  isSaveDisabled: boolean;
   onCancel: () => void;
 }
 
 const initFormData: Pick<FieldProperties, 'name' | 'crop'> = { name: '', crop: '' };
 
-const CreateFieldForm = ({ onSave, onCancel }: Props) => {
+const CreateFieldForm = ({ onSave, isSaveDisabled, onCancel }: Props) => {
   const [fieldFormData, setFieldFormData] = useState(initFormData);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const focusInput = useEffectEvent(() => {
-    inputRef.current?.select();
-  });
-
   useEffect(() => {
-    focusInput();
+    inputRef.current?.select();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +66,7 @@ const CreateFieldForm = ({ onSave, onCancel }: Props) => {
       <div className="flex justify-end gap-2">
         <Button
           onClick={handleSave}
-          disabled={!fieldFormData.name}
+          disabled={!fieldFormData.name || isSaveDisabled}
           aria-disabled={!fieldFormData.name}
         >
           Save

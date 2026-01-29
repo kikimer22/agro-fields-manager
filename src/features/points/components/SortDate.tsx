@@ -1,6 +1,6 @@
 import { useState, useEffect, useTransition } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
-import { toggleSort } from '@/features/points/slice/pointsSlice';
+import { setSort } from '@/features/points/slice/pointsSlice';
 import { INIT_SORT_VALUE, SORT_SELECTOR } from '@/shared/constants';
 import { Button } from '@/shared/components/ui/button.tsx';
 import { Field, FieldLabel } from '@/shared/components/ui/field.tsx';
@@ -9,7 +9,7 @@ import type { Sort } from '@/shared/types';
 
 const SortDate = () => {
   const dispatch = useAppDispatch();
-  const sort = useAppSelector((state) => state.pointsSlice.sort);
+  const sort = useAppSelector((s) => s.pointsSlice.sort);
 
   const [sortValue, setSortValue] = useState(sort || INIT_SORT_VALUE);
   const [isPending, startTransition] = useTransition();
@@ -20,7 +20,7 @@ const SortDate = () => {
 
   const handleConfirm = () => {
     startTransition(() => {
-      dispatch(toggleSort(sortValue));
+      dispatch(setSort(sortValue));
     });
   };
 

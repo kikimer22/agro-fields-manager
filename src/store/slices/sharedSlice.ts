@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { FieldFeature } from '@/shared/types';
 import { selectFieldAction } from '@/store/actions/selectFieldAction';
-import { fieldFeature2 } from '@/mock/fieldFeature';
+// import { fieldFeature2 } from '@/mock/fieldFeature';
 
 interface FieldSliceState {
   isCreatingFieldFlow: boolean;
@@ -11,10 +11,11 @@ interface FieldSliceState {
 }
 
 const initialState: FieldSliceState = {
-  isCreatingFieldFlow: false,
+  isCreatingFieldFlow: true,
   isSelectingFieldFlow: false,
-  isAddingPointsFlow: true,
-  selectedField: fieldFeature2,
+  isAddingPointsFlow: false,
+  // selectedField: fieldFeature2,
+  selectedField: null,
 };
 
 export const sharedSlice = createSlice({

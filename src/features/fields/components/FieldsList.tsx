@@ -3,16 +3,17 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks/useRdxStore';
 import { Button } from '@/shared/components/ui/button';
 import type { FieldFeature } from '@/shared/types';
 import useFieldActions from '@/features/fields/hooks/useFields';
-import { removeField } from '@/features/fields/slice/fieldsSlice';
+import { removeFieldAction } from '@/store/actions/removeFieldAction';
 
 const FieldsList = () => {
   const dispatch = useAppDispatch();
-  const features = useAppSelector((state) => state.fieldsSlice.fieldsCollection.features);
-  const selectedFieldId = useAppSelector((state) => state.fieldsSlice.selectedFieldId);
+  const features = useAppSelector((s) => s.fieldsSlice.fieldsCollection.features);
+  const selectedFieldId = useAppSelector((s) => s.fieldsSlice.selectedFieldId);
+
   const { selectAndCenter } = useFieldActions();
 
   const handleRemove = (id: string) => {
-    dispatch(removeField(id));
+    dispatch(removeFieldAction(id));
   };
 
   return (

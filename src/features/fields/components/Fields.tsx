@@ -5,9 +5,10 @@ import { useAppSelector } from '@/store/hooks/useRdxStore';
 import useFields from '@/features/fields/hooks/useFields';
 
 const Fields = () => {
-  const features = useAppSelector((state) => state.fieldsSlice.fieldsCollection.features);
-  const selectedFieldId = useAppSelector((state) => state.fieldsSlice.selectedFieldId);
-  const isSelectingFieldFlow = useAppSelector((state) => state.sharedSlice.isSelectingFieldFlow);
+  const features = useAppSelector((s) => s.fieldsSlice.fieldsCollection.features);
+  const selectedFieldId = useAppSelector((s) => s.fieldsSlice.selectedFieldId);
+  const isSelectingFieldFlow = useAppSelector((s) => s.sharedSlice.isSelectingFieldFlow);
+
   const { selectAndCenter } = useFields();
 
   return features.map((f) => (

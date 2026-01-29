@@ -46,17 +46,23 @@ const PointsCreator = () => {
 
   const handleSave = useCallback(({ type, description }: Pick<Point, 'type' | 'description'>) => {
       if (!draftPoint) return;
-      const id = nanoid();
+      if (!selectedField) return;
       const { lat, lng } = draftPoint;
-      const mgrs = convertToMGRS(lat, lng);
-      const date = new Date().toISOString();
-      const icon = ICON_MAP[type] || POINT_SELECTOR_ICONS[0];
-
-      dispatch(addPoint({ id, mgrs, lng, lat, type, description, date, icon }));
+      const point: Point = {
+        id: nanoid(),
+        lng,
+        lat,
+        mgrs: convertToMGRS(lat, lng),
+        type,
+        description,
+        date: new Date().toISOString(),
+        icon: ICON_MAP[type] || POINT_SELECTOR_ICONS[0],
+      };
+      dispatch(addPoint({ fieldId: selectedField.properties.id, point }));
 
       setDraftPoint(null);
     },
-    [dispatch, draftPoint]
+    [dispatch, draftPoint, selectedField]
   );
 
   return (

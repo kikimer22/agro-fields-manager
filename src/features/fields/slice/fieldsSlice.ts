@@ -16,7 +16,8 @@ const initialState: FieldsState = {
       fieldFeature3
     ],
   },
-  selectedFieldId: fieldFeature2.properties.id,
+  // selectedFieldId: fieldFeature2.properties.id,
+  selectedFieldId: null,
 };
 
 export const fieldsSlice = createSlice({
@@ -28,9 +29,6 @@ export const fieldsSlice = createSlice({
     },
     removeField: (state, action: PayloadAction<string>) => {
       state.fieldsCollection.features = state.fieldsCollection.features.filter((f) => f.properties.id !== action.payload);
-      if (state.selectedFieldId === action.payload) {
-        state.selectedFieldId = null;
-      }
     },
     setSelectedFieldId: (state, action: PayloadAction<string | null>) => {
       state.selectedFieldId = action.payload;

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { latLng, type LeafletMouseEvent } from 'leaflet';
 import { Polyline, useMap } from 'react-leaflet';
 import { transformPositionsToLatLngExpression } from '@/lib/utils';
@@ -7,22 +7,25 @@ import { addPoint, removePoint } from '@/features/createField/slice/fieldSlice';
 import ClickHandler from '@/shared/components/ClickHandler';
 import FieldLayer from '@/features/createField/components/FieldLayer';
 import PointsLayer from '@/features/createField/components/PointsLayer';
-import { MARKER_SIZE } from '@/shared/constants.ts';
+import { MARKER_SIZE, MIN_VERTICES_LENGTH_FOR_POLYGON } from '@/shared/constants.ts';
 
 const FieldCreator = () => {
   const dispatch = useAppDispatch();
-  const vertices = useAppSelector((state) => state.fieldSlice.feature.geometry.coordinates[0]);
-  const isCreatingFieldFlow = useAppSelector((state) => state.sharedSlice.isCreatingFieldFlow);
-  const isShowingField = useAppSelector((state) => state.fieldSlice.isShowingField);
-  const isAddingPointsMode = useAppSelector((state) => state.fieldSlice.isAddingPointsMode);
-  const isConfirmCreation = useAppSelector((state) => state.fieldSlice.isConfirmCreation);
+  const isCreatingFieldFlow = useAppSelector((s) => s.sharedSlice.isCreatingFieldFlow);
+  const feature = useAppSelector((s) => s.fieldSlice.feature);
+  const isAddingPointsMode = useAppSelector((s) => s.fieldSlice.isAddingPointsMode);
+  const isConfirm = useAppSelector((s) => s.fieldSlice.isConfirm);
+
+  const vertices = useMemo(() => feature.geometry.coordinates[0], [feature]);
+  const isShowingField = useMemo(() => vertices.length >= MIN_VERTICES_LENGTH_FOR_POLYGON, [vertices]);
+  const isShowingLine = useMemo(() => vertices.length > 1 && vertices.length < MIN_VERTICES_LENGTH_FOR_POLYGON, [vertices]);
 
   const map = useMap();
 
   const handleMapClick = useCallback(
     ({ latlng }: LeafletMouseEvent) => {
       if (!isCreatingFieldFlow) return;
-      if (isConfirmCreation) return;
+      if (isConfirm) return;
 
       const { lat, lng } = latlng;
 
@@ -42,17 +45,17 @@ const FieldCreator = () => {
         }
       }
     },
-    [dispatch, isCreatingFieldFlow, isAddingPointsMode, vertices, map, isConfirmCreation]
+    [dispatch, isCreatingFieldFlow, isAddingPointsMode, vertices, map, isConfirm]
   );
 
   return (
     <>
-      {isCreatingFieldFlow && <ClickHandler onMapClick={handleMapClick} isSkip={true}/>}
+      {isCreatingFieldFlow && <ClickHandler onMapClick={handleMapClick}/>}
 
       <PointsLayer/>
 
-      {vertices.length > 1 && !isShowingField && (
-        <Polyline positions={transformPositionsToLatLngExpression(vertices)} color="red" interactive={false}/>
+      {isShowingLine && (
+        <Polyline positions={transformPositionsToLatLngExpression(vertices)} color="green" interactive={false}/>
       )}
 
       {isShowingField && <FieldLayer/>}

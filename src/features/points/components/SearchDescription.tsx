@@ -8,7 +8,7 @@ import { Button } from '@/shared/components/ui/button';
 
 const SearchDescription = () => {
   const dispatch = useAppDispatch();
-  const search = useAppSelector((state) => state.pointsSlice.search);
+  const search = useAppSelector((s) => s.pointsSlice.search);
 
   const [searchValue, setSearchValue] = useState(search || INIT_SEARCH_VALUE);
   const [isPending, startTransition] = useTransition();

@@ -24,6 +24,8 @@ const lat = 50.4501;
 const lng = 30.53;
 export const INIT_MAP_CENTER: LatLngExpression = [lat, lng];
 
+export const MIN_VERTICES_LENGTH_FOR_POLYGON = 3;
+
 export const POINT_TYPE_SELECTOR: Record<string, string>[] = [
   { value: 'Проба ґрунту', label: 'Проба ґрунту' },
   { value: 'Шкідники', label: 'Шкідники' },

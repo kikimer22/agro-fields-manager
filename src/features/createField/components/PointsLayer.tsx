@@ -1,10 +1,13 @@
+import { useMemo } from 'react';
 import { CircleMarker } from 'react-leaflet';
 import { useAppSelector } from '@/store/hooks/useRdxStore';
 import { MARKER_SIZE } from '@/shared/constants';
 
 const PointsLayer = () => {
-  const vertices = useAppSelector((state) => state.fieldSlice.feature.geometry.coordinates[0]);
-  const isAddingPointsMode = useAppSelector((state) => state.fieldSlice.isAddingPointsMode);
+  const feature = useAppSelector((s) => s.fieldSlice.feature);
+  const isAddingPointsMode = useAppSelector((s) => s.fieldSlice.isAddingPointsMode);
+
+  const vertices = useMemo(() => feature.geometry.coordinates[0], [feature]);
 
   return vertices.map(([lng, lat], idx) => (
     <CircleMarker
